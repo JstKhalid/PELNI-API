@@ -4,6 +4,6 @@ from typing import List, Optional
 class forecast(BaseModel):
     dataset:"str"
     tanggal:"str"
-    method: Optional[str] = None
+    method: Optional[str] = "XGB"
     # outliers: "str"
     # gridsearch:"str"
