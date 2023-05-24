@@ -4,7 +4,7 @@ import schemas
 from sqlalchemy.orm import Session
 from typing import List
 # from repository import blog
-
+from repositories import repoForecast
 #Pake Tags buat dokumentasi nya mudah dibaca & prefix supaya URL nya ga berulang ulang ditulis
 router = APIRouter(
     tags=['Forecast'],
@@ -13,7 +13,4 @@ router = APIRouter(
 
 @router.post("/",)
 def getForecast(request: schemas.forecast):
-    return {"status":{"responseCode":status.HTTP_200_OK,
-                      "responseDesc":"Success",
-                      "responseMessage":"Success fetching data!"},
-            "result" : request}
+    return repoForecast.main(request)

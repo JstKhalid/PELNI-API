@@ -5,5 +5,6 @@ class forecast(BaseModel):
     dataset:"str"
     tanggal:"str"
     method: Optional[str] = "XGB"
-    # outliers: "str"
-    # gridsearch:"str"
+    outliers: Optional[str] = "No"
+    normalization: Optional[str] = "No"
+    gridSearch: Optional[str] = "No"
