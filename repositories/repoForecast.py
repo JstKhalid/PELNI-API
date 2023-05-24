@@ -180,8 +180,8 @@ def main(request:schemas.forecast):
             model = xgb.XGBRegressor(objective='reg:squarederror', random_state=42)
             if gridSearch =="yes":
                 #panggil split_data(data)
-                split_data(X)
-                
+                # split_data(data)
+                # X_train,X_test,y_train,y_test = split_data(data)
                 #panggil gs_method
                 # gs_XGB(X_train,y_train,model)
                 pass
@@ -190,16 +190,16 @@ def main(request:schemas.forecast):
         else:
             pass
         
-        model.fit(X,y )
+        model.fit(X,y)
         y_pred = model.predict(X_pred)
-        this_res = [pred_date,row[1],row[0],row[3],row[2],y_pred[0]] #menyimpan hasil prediksi per rute
+        y_pred = float(y_pred)  # Convert numpy.float32 to Python float
+        this_res = [pred_date, row[1], row[0], row[3], row[2], y_pred] #menyimpan hasil prediksi per rute
         print(this_res)
         res.append(this_res)
     
     dict_res = [{'date':a[0], 'org': a[1], 'kode_org': a[2], 'des': a[3], 'kode_des':a[4], 'y_pred':a[5]} for a in res]
-    jsons = json.dumps(dict_res, default=str)
     
-    
+    # jsons = json.dumps(dict_res, default=str)
     
     return {
         "status": {
@@ -207,5 +207,5 @@ def main(request:schemas.forecast):
             "responseDesc": "Success",
             "responseMessage": "Success fetching data!"
         },
-        "result": jsons
+        "result": dict_res
     }
