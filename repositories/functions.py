@@ -12,6 +12,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Response
 import schemas
 from sklearn.preprocessing import StandardScaler
 import json
+from sklearn.metrics import r2_score
+
 
 
 def read_dataset(dataset):
@@ -65,32 +67,6 @@ def prepare_X_pred(year, month, weekofmonth, weekday, day, hijri_year, hijri_mon
     X_pred = np.array([[year, month, weekofmonth, weekday, day, hijri_year, hijri_month, hijri_day, is_holiday, is_covid]])
     return X_pred
 
-def process_data(request):
-    dataset = request.dataset
-    tanggal = request.tanggal
-    date_format = "%d-%m-%Y"
-    tanggal = datetime.strptime(tanggal, date_format)
-    pred_date = tanggal.date()
-    outliers = request.outliers
-    normalization = request.normalization
-    method = request.method
-    gridSearch = request.gridSearch
-    
-    if outliers != "No":
-        outliers = request.outliers
-    if normalization!= "No":
-        normalization = request.normalization  
-    if method != "No":
-        method = request.method
-    
-    df = read_dataset(dataset)
-    df_holidays = create_holidays_table(df)
-    year, month, day, weekday, weekofmonth, hijri_year, hijri_month, hijri_day, is_holiday, is_covid = get_features(pred_date, df_holidays)
-    df = aggregate_revenue(df)
-    df = stretch_date_features(df,df_holidays)
-    X_pred = prepare_X_pred(year, month, weekofmonth, weekday, day, hijri_year, hijri_month, hijri_day, is_holiday, is_covid)
-    
-    return df, X_pred, pred_date
 
 def ElimOutliers(data):
     n = 0
@@ -165,3 +141,30 @@ def gs_LSTM(data,model):
 
 def gs_RF(data,model):
     pass
+
+def process_data(request):
+    dataset = request.dataset
+    tanggal = request.tanggal
+    date_format = "%d-%m-%Y"
+    tanggal = datetime.strptime(tanggal, date_format)
+    pred_date = tanggal.date()
+    outliers = request.outliers
+    normalization = request.normalization
+    method = request.method
+    gridSearch = request.gridSearch
+    
+    if outliers != "No":
+        outliers = request.outliers
+    if normalization!= "No":
+        normalization = request.normalization  
+    if method != "No":
+        method = request.method
+    
+    df = read_dataset(dataset)
+    df_holidays = create_holidays_table(df)
+    year, month, day, weekday, weekofmonth, hijri_year, hijri_month, hijri_day, is_holiday, is_covid = get_features(pred_date, df_holidays)
+    df = aggregate_revenue(df)
+    df = stretch_date_features(df,df_holidays)
+    X_pred = prepare_X_pred(year, month, weekofmonth, weekday, day, hijri_year, hijri_month, hijri_day, is_holiday, is_covid)
+    
+    return df, X_pred, pred_date
