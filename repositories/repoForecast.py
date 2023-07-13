@@ -1,13 +1,14 @@
-import schemas
+import schemas,model
 import repositories.functions as functions
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 import xgboost as xgb
 from sklearn.metrics import r2_score
 import pandas as pd
 import numpy as np
 
 
-def main(request: schemas.forecast):
+def main(request: schemas.forecast, db: Session):
     
     def forecast_cargo(request):
         dataset_cargo = "D://FrameworkDoRoute//PELNI//revenueDaily.xlsx"
@@ -236,6 +237,17 @@ def main(request: schemas.forecast):
         column4 = row['revenue_cargo']
         column5 = row['revenue_pax']
         
+        insertDB = model.forecast(departure_date = pred_date,
+                    kode_org = column1,
+                    kode_des = column2,
+                    type_rev = column3,
+                    revenue_cargo = column4,
+                    revenue_pax = column5)
+        
+        db.add(insertDB)
+        db.commit()
+        db.refresh(insertDB)
+        
         this_res = {
             'departure_date': pred_date,
             'kode_org': column1,
@@ -254,4 +266,15 @@ def main(request: schemas.forecast):
             "responseMessage": "Success fetching data!"
         },
         "result": res
+    }
+    
+def getAllData(db: Session):
+    dataForecast = db.query(model.forecast).all()
+    return {
+        "status": {
+            "responseCode": status.HTTP_200_OK,
+            "responseDesc": "Success",
+            "responseMessage": "Success fetching data!"
+        },
+        "result": dataForecast
     }

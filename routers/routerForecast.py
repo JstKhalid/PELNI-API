@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response
-# import database, models, schemas, oauth2
+import database, model
 import schemas
 from sqlalchemy.orm import Session
 from typing import List
@@ -12,5 +12,9 @@ router = APIRouter(
 ) 
 
 @router.post("/",)
-def getForecast(request: schemas.forecast):
-    return repoForecast.main(request)
+def getForecast(request: schemas.forecast, db: Session = Depends(database.get_db)):
+    return repoForecast.main(request,db)
+
+@router.get("/")
+def getData(db:Session = Depends(database.get_db)):
+    return repoForecast.getAllData(db)
